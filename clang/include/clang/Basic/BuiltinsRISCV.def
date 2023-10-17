@@ -89,5 +89,8 @@ TARGET_BUILTIN(__builtin_riscv_sm3p1, "UiUi", "nc", "zksh")
 TARGET_BUILTIN(__builtin_riscv_ntl_load, "v.", "t", "zihintntl")
 TARGET_BUILTIN(__builtin_riscv_ntl_store, "v.", "t", "zihintntl")
 
+// Vector extension, loadBigEndian32 custom instruction definition
+TARGET_BUILTIN(__builtin_riscv_loadBigEndian32, "v*UiUi", "n", "zve32x")
+
 #undef BUILTIN
 #undef TARGET_BUILTIN

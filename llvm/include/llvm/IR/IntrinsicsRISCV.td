@@ -158,6 +158,14 @@ let TargetPrefix = "riscv" in {
                     [NoCapture<ArgIndex<1>>, IntrReadMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
   }
+  // For unit stride load big endian 32
+  // Input: (passthru, pointer, vl)
+  class RISCVUSLoadBE
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, llvm_ptr_ty, llvm_anyint_ty],
+                    [NoCapture<ArgIndex<1>>, IntrReadMem]>, RISCVVIntrinsic {
+    let VLOperand = 2;
+  }
   // For unit stride fault-only-first load
   // Input: (passthru, pointer, vl)
   // Output: (data, vl)
@@ -1352,6 +1360,7 @@ let TargetPrefix = "riscv" in {
   }
 
   defm vle : RISCVUSLoad;
+  defm vlebe : RISCVUSLoadBE;
   defm vleff : RISCVUSLoadFF;
   defm vse : RISCVUSStore;
   defm vlse: RISCVSLoad;
