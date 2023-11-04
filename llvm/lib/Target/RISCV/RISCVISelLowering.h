@@ -144,7 +144,7 @@ enum NodeType : unsigned {
   SM3P0, SM3P1,
 
   // Vector Extension, New Custom Instruction
-  VLOADBIGENDIAN32_VL,
+  VLE32BE_V,
 
   // Vector Extension
   FIRST_VL_VECTOR_OP,

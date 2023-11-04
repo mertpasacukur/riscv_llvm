@@ -799,6 +799,22 @@ class VPseudoUSLoadMask<VReg RetClass,
   let UsesMaskPolicy = 1;
 }
 
+class VPseudoUSLoadBENoMask<VReg RetClass,
+                          int EEW> :
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$dest, GPRMem:$rs1, AVL:$vl, ixlenimm:$sew,
+                  ixlenimm:$policy), []>,
+      RISCVVPseudo,
+      RISCVVLE</*Masked*/1, /*Strided*/1, /*FF*/1, !logtwo(EEW), VLMul> {   // PASA: 0x1, 0x1, 0x1 pattern'i kullanilmadigindan tercih ettim!
+  let mayLoad = 1;
+  let mayStore = 0;
+  let hasSideEffects = 0;
+  let HasVLOp = 1;
+  let HasSEWOp = 1;
+  let HasVecPolicyOp = 1;
+  let Constraints = "$rd = $dest";
+}
+
 class VPseudoUSLoadFFNoMask<VReg RetClass,
                             int EEW> :
       Pseudo<(outs RetClass:$rd, GPR:$vl),
@@ -1865,6 +1881,20 @@ multiclass VPseudoUSLoad {
         def "E" # eew # "_V_" # LInfo # "_MASK" :
           VPseudoUSLoadMask<vreg, eew>,
           RISCVMaskedPseudo<MaskIdx=2>,
+          VLESched<LInfo>;
+      }
+    }
+  }
+}
+
+multiclass VPseudoUSLoadBE {
+  foreach eew = EEWList in {
+    foreach lmul = MxSet<eew>.m in {
+      defvar LInfo = lmul.MX;
+      defvar vreg = lmul.vrclass;
+      let VLMul = lmul.value, SEW=eew in {
+        def eew # "_V_" # LInfo :
+          VPseudoUSLoadBENoMask<vreg, eew>,
           VLESched<LInfo>;
       }
     }
@@ -6150,6 +6180,9 @@ defm PseudoVS : VPseudoUSStore;
 
 defm PseudoVLM : VPseudoLoadMask;
 defm PseudoVSM : VPseudoStoreMask;
+
+// Pseudo for custom unit-stride big endian load
+defm PseudoVLBE : VPseudoUSLoadBE;
 
 //===----------------------------------------------------------------------===//
 // 7.5 Vector Strided Instructions

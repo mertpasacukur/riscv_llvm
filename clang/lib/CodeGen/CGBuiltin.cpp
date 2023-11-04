@@ -61,6 +61,7 @@
 #include "llvm/TargetParser/X86TargetParser.h"
 #include <optional>
 #include <sstream>
+#include <iostream>
 
 using namespace clang;
 using namespace CodeGen;
@@ -20598,6 +20599,16 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     break;
   case RISCV::BI__builtin_riscv_sha256sum1:
     ID = Intrinsic::riscv_sha256sum1;
+    break;
+
+  // Vector extension, loadBigEndian32 custom instruction intrinsic ID initialization
+  case RISCV::BI__builtin_riscv_vlebe32_v:
+    std::cout << "Entered case for BI__builtin_riscv_vlebe32_v" << std::endl;
+    ID = Intrinsic::riscv_vlebe;
+    PolicyAttrs = 3;
+    Ops[0] = Builder.CreateBitCast(Ops[0], ResultType->getPointerTo());
+    Ops.insert(Ops.begin(), llvm::PoisonValue::get(ResultType));
+    IntrinsicTypes = {ResultType, Ops.back()->getType()};
     break;
 
   // Zksed

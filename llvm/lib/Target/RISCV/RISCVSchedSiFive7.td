@@ -434,6 +434,7 @@ foreach mx = SchedMxList in {
   let Latency = 4, ReleaseAtCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVLDE",    [SiFive7VL], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDFF",   [SiFive7VL], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVLBE",   [SiFive7VL], mx, IsWorstCase>;
   }
   let Latency = 1, ReleaseAtCycles = [Cycles] in
   defm "" : LMULWriteResMX<"WriteVSTE",    [SiFive7VS], mx, IsWorstCase>;

@@ -214,6 +214,7 @@ def WriteVSETVL       : SchedWrite;
 // 7.4. Vector Unit-Stride Instructions
 defm "" : LMULSchedWrites<"WriteVLDE">;
 defm "" : LMULSchedWrites<"WriteVSTE">;
+defm "" : LMULSchedWrites<"WriteVLBE">;
 // 7.4.1. Vector Unit-Strided Mask
 defm "" : LMULSchedWrites<"WriteVLDM">;
 defm "" : LMULSchedWrites<"WriteVSTM">;
@@ -738,6 +739,7 @@ defm "" : LMULWriteRes<"WriteVSTOX16", []>;
 defm "" : LMULWriteRes<"WriteVSTOX32", []>;
 defm "" : LMULWriteRes<"WriteVSTOX64", []>;
 defm "" : LMULWriteRes<"WriteVLDFF", []>;
+defm "" : LMULWriteRes<"WriteVLBE", []>;
 // These are already LMUL aware
 def : WriteRes<WriteVLD1R, []>;
 def : WriteRes<WriteVLD2R, []>;

@@ -189,6 +189,17 @@ let TargetPrefix = "riscv" in {
                     RISCVVIntrinsic {
     let VLOperand = 3;
   }
+  // For unit stride load big endian 32 with mask
+  // Input: (maskedoff, pointer, mask, vl, policy)
+  class RISCVUSLoadBEMasked
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty ],
+                    [LLVMMatchType<0>, llvm_ptr_ty,
+                     LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
+                     llvm_anyint_ty, LLVMMatchType<1>],
+                    [NoCapture<ArgIndex<1>>, ImmArg<ArgIndex<4>>, IntrReadMem]>,
+                    RISCVVIntrinsic {
+    let VLOperand = 3;
+  }
   // For unit stride fault-only-first load with mask
   // Input: (maskedoff, pointer, mask, vl, policy)
   // Output: (data, vl)
@@ -1172,6 +1183,10 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RISCVUSLoad;
     def "int_riscv_" # NAME # "_mask" : RISCVUSLoadMasked;
   }
+  multiclass RISCVUSLoadBE {
+    def "int_riscv_" # NAME : RISCVUSLoadBE;
+    def "int_riscv_" # NAME # "_mask" : RISCVUSLoadBEMasked;
+  }
   multiclass RISCVUSLoadFF {
     def "int_riscv_" # NAME : RISCVUSLoadFF;
     def "int_riscv_" # NAME # "_mask" : RISCVUSLoadFFMasked;
@@ -1372,6 +1387,7 @@ let TargetPrefix = "riscv" in {
 
   def int_riscv_vlm : RISCVUSMLoad;
   def int_riscv_vsm : RISCVUSStore;
+  def int_riscv_vlebem : RISCVUSLoadBEMasked;
 
   defm vadd : RISCVBinaryAAX;
   defm vsub : RISCVBinaryAAX;
@@ -1479,7 +1495,7 @@ let TargetPrefix = "riscv" in {
                                                  [LLVMMatchType<0>,
                                                   LLVMVectorElementType<0>,
                                                   llvm_anyint_ty],
-                                                 [IntrNoMem]>, RISCVVIntrinsic {
+                                                [IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 2;
   }
   // Output: (vector)

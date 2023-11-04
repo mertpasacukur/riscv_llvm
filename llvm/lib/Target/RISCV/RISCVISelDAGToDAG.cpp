@@ -23,6 +23,7 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
 #include <optional>
+#include <iostream>
 
 using namespace llvm;
 
@@ -531,6 +532,8 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
     return;
 
   assert(Node->getOpcode() == ISD::INTRINSIC_WO_CHAIN && "Unexpected opcode");
+
+  std::cout << "Entered case for : selectVSETVLI" << std::endl;
 
   SDLoc DL(Node);
   MVT XLenVT = Subtarget->getXLenVT();
@@ -1761,6 +1764,56 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
 
       if (auto *MemOp = dyn_cast<MemSDNode>(Node))
         CurDAG->setNodeMemRefs(Load, {MemOp->getMemOperand()});
+
+      ReplaceNode(Node, Load);
+      return;
+    }
+    case Intrinsic::riscv_vlebe: {
+      bool IsMasked = false;
+      bool IsStrided = false;
+
+      std::cout << "Entered case for INTRINSIC_W_CHAIN, IntNo: " << IntNo << std::endl;
+
+      MVT VT = Node->getSimpleValueType(0);
+      unsigned Log2SEW = Log2_32(VT.getScalarSizeInBits());
+
+      unsigned CurOp = 2;
+      SmallVector<SDValue, 8> Operands;
+
+      Operands.push_back(Node->getOperand(CurOp++));
+
+      addVectorLoadStoreOperands(Node, Log2SEW, DL, CurOp, IsMasked, IsStrided,
+                                 Operands, /*IsLoad=*/true);
+
+      // Debugging: print the operands
+      std::cout << "Debugging operands --> VLEBE:" << std::endl;
+      for (const auto &Op : Operands) {
+        SDNode *node = Op.getNode();
+        std::cout << " Operand type: " << node->getOpcode()
+                  << ", Operand class: " << node->getOperationName();
+      }
+
+      RISCVII::VLMUL LMUL = RISCVTargetLowering::getLMUL(VT);
+      const RISCV::VLEPseudo *P =
+          RISCV::getVLEPseudo(true /* Masked, to map */, true/* strided, to map */, /*FF to map*/ true, Log2SEW,
+                              static_cast<unsigned>(LMUL));
+      MachineSDNode *Load =
+        CurDAG->getMachineNode(P->Pseudo, DL, Node->getVTList(), Operands);
+
+      if (auto *MemOp = dyn_cast<MemSDNode>(Node))
+      {
+        CurDAG->setNodeMemRefs(Load, {MemOp->getMemOperand()});
+
+          std::cout << "Memory Operand: "
+            << ", Base Ptr: " << MemOp->getBasePtr().getNode()->getOperationName()
+            << ", Address: " << MemOp->getAddressSpace()
+            << ", Alignment: " << MemOp->getAlign().value() << std::endl;
+      }
+        
+      std::cout << "Current Node type: " << Node->getOpcode()
+          << ", Current Node class: " << Node->getOperationName() << std::endl;
+
+      std::cout << "Created Machine Node with opcode: " << Load->getOpcode() << std::endl;
 
       ReplaceNode(Node, Load);
       return;

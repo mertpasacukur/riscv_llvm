@@ -236,7 +236,7 @@ class VLFSched<string lmul, bit forceMasked = 0> : SchedCommon<
 >;
 class VLFSchedMC: VLFSched<"WorstCase", forceMasked=1>;
 
-// Unit-stride Big Endian 32 bit Loads
+// Unit-stride Big Endian Loads
 class VLBESched<string lmul, bit forceMasked = 0> : SchedCommon<
   [!cast<SchedWrite>("WriteVLBE_" # lmul)],
   [ReadVLDX], mx=lmul, forceMasked=forceMasked
@@ -335,8 +335,8 @@ class VUnitStrideLoadFF<RISCVWidth width, string opcodestr>
                 (outs VR:$vd),
                 (ins GPRMemZeroOffset:$rs1, VMaskOp:$vm), opcodestr, "$vd, ${rs1}$vm">;
 
-// unit-stride big endian 32 load vd, (rs1), vm
-class VUnitStrideLoad32BigEndian<RISCVWidth width, string opcodestr>
+// unit-stride big endian load vd, (rs1), vm
+class VUnitStrideLoadBE<RISCVWidth width, string opcodestr>
     : RVInstVLU<0b000, width.Value{3}, LUMOPUnitStrideBE, width.Value{2-0},
                 (outs VR:$vd),
                 (ins GPRMemZeroOffset:$rs1, VMaskOp:$vm), opcodestr, "$vd, ${rs1}$vm">;
@@ -1067,6 +1067,9 @@ foreach eew = [8, 16, 32, 64] in {
     def VLE#eew#_V : VUnitStrideLoad<w, "vle"#eew#".v">, VLESchedMC;
     def VSE#eew#_V  : VUnitStrideStore<w,  "vse"#eew#".v">, VSESchedMC;
 
+    // Vector Unit-Stride Load Big Endian Instructions
+    def VLBE#eew#_V : VUnitStrideLoadBE<w, "vl"#eew#"be.v">, VLBESchedMC;
+
     // Vector Unit-Stride Fault-only-First Loads
     def VLE#eew#FF_V : VUnitStrideLoadFF<w,  "vle"#eew#"ff.v">, VLFSchedMC;
 
@@ -1083,12 +1086,6 @@ foreach eew = [8, 16, 32, 64] in {
   let Predicates = !if(!eq(eew, 64), [IsRV64, HasVInstructionsI64],
                                      [HasVInstructions]) in
   defm "" : VIndexLoadStore<eew>;
-}
-
-eew = 32;
-defvar w = !cast<RISCVWidth>("LSWidth"#eew);
-let Predicates = [HasVInstructions] in {
-def VLE32BE_V : VUnitStrideLoad32BigEndian<w,  "vle32be.v">, VLBESchedMC;
 }
 
 let Predicates = [HasVInstructions] in {

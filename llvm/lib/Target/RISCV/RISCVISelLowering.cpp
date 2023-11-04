@@ -43,6 +43,7 @@
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
 #include <optional>
+#include <iostream>
 
 using namespace llvm;
 
@@ -1370,6 +1371,8 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                                              MachineFunction &MF,
                                              unsigned Intrinsic) const {
   auto &DL = I.getModule()->getDataLayout();
+
+  std::cout << "Entered case for getTgtMemIntrinsic, Intrinsic: " << Intrinsic << std::endl;
 
   auto SetRVVLoadStoreInfo = [&](unsigned PtrOp, bool IsStore,
                                  bool IsUnitStrided) {
@@ -9471,6 +9474,8 @@ RISCVTargetLowering::lowerFixedLengthVectorLoadToRVV(SDValue Op,
   SDLoc DL(Op);
   auto *Load = cast<LoadSDNode>(Op);
 
+  std::cout << "Entered case for lowerFixedLengthVectorLoadToRVV" << std::endl;
+
   assert(allowsMemoryAccessForAlignment(*DAG.getContext(), DAG.getDataLayout(),
                                         Load->getMemoryVT(),
                                         *Load->getMemOperand()) &&
@@ -9542,6 +9547,8 @@ SDValue RISCVTargetLowering::lowerMaskedLoad(SDValue Op,
                                              SelectionDAG &DAG) const {
   SDLoc DL(Op);
   MVT VT = Op.getSimpleValueType();
+
+  std::cout << "Entered case for lowerMaskedLoad" << std::endl;
 
   const auto *MemSD = cast<MemSDNode>(Op);
   EVT MemVT = MemSD->getMemoryVT();
@@ -17709,6 +17716,7 @@ bool RISCVTargetLowering::mayBeEmittedAsTailCall(const CallInst *CI) const {
 }
 
 const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
+  std::cout << "Entered case for getTargetNodeName, Opcode: " << Opcode << std::endl;
 #define NODE_NAME_CASE(NODE)                                                   \
   case RISCVISD::NODE:                                                         \
     return "RISCVISD::" #NODE;
@@ -17791,6 +17799,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(SPLAT_VECTOR_SPLIT_I64_VL)
   NODE_NAME_CASE(READ_VLENB)
   NODE_NAME_CASE(TRUNCATE_VECTOR_VL)
+  NODE_NAME_CASE(VLE32BE_V)
   NODE_NAME_CASE(VSLIDEUP_VL)
   NODE_NAME_CASE(VSLIDE1UP_VL)
   NODE_NAME_CASE(VSLIDEDOWN_VL)

@@ -49,6 +49,31 @@ let SupportOverloading = false,
   }
 }
 
+let SupportOverloading = false,
+    MaskedPolicyScheme = NonePolicy in {
+  class RVVVLEBEMaskBuiltin : RVVOutBuiltin<"m", "mPCUe", "c"> {
+    let Name = "vlebem_v";
+    let IRName = "vlebem";
+    let HasMasked = false;
+  }
+}
+
+let SupportOverloading = false,
+    UnMaskedPolicyScheme = HasPassthruOperand in {
+  multiclass RVVVLEBEBuiltin<list<string> types> {
+    let Name = NAME # "_v",
+        IRName = "vlebe",
+        MaskedIRName ="vlebe_mask" in {
+      foreach type = types in {
+        def : RVVOutBuiltin<"v", "vPCe", type>;
+        if !not(IsFloat<type>.val) then {
+          def : RVVOutBuiltin<"Uv", "UvPCUe", type>;
+        }
+      }
+    }
+  }
+}
+
 multiclass RVVVLEFFBuiltin<list<string> types> {
   let Name = NAME # "_v",
       IRName = "vleff",
@@ -663,6 +688,9 @@ let Name = "vle16_v", RequiredFeatures = ["ZvfhminOrZvfh"] in
   defm vle16_h: RVVVLEBuiltin<["x"]>;
 defm vle32: RVVVLEBuiltin<["i","f"]>;
 defm vle64: RVVVLEBuiltin<["l","d"]>;
+
+def vlebem: RVVVLEBEMaskBuiltin;
+defm vlebe: RVVVLEBEBuiltin<["i", "f"]>;
 
 def vsm : RVVVSEMaskBuiltin;
 defm vse8 : RVVVSEBuiltin<["c"]>;
