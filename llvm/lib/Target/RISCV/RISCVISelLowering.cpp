@@ -5456,9 +5456,28 @@ static SDValue SplitVectorReductionOp(SDValue Op, SelectionDAG &DAG) {
                      {ResLo, Hi, MaskHi, EVLHi}, Op->getFlags());
 }
 
+void printOnce() {
+    // Static variable to keep track of whether the function has already been called
+    static bool hasPrinted = false;
+
+    // Check if the function has already run
+    if (!hasPrinted) {
+        // Print your message
+        std::cout << "VECTOR_SPLICE: " << ISD::VECTOR_SPLICE
+                  << " -- VECTOR_SHUFFLE: " << ISD::VECTOR_SHUFFLE
+                  << " -- INSERT_VECTOR_ELT: " << ISD::INSERT_VECTOR_ELT
+                  << " -- INSERT_SUBVECTOR: " << ISD::INSERT_SUBVECTOR << std::endl;
+
+        // Set the flag to indicate the message has been printed
+        hasPrinted = true;
+    }
+}
+
 SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
                                             SelectionDAG &DAG) const {
-  switch (Op.getOpcode()) {
+  std::cout << "Entered case for RISCVTargetLowering::LowerOperation The opcode is: " << Op.getOpcode() << std::endl;                                            
+  printOnce();
+  switch (Op.getOpcode()) {    
   default:
     report_fatal_error("unimplemented operand");
   case ISD::ATOMIC_FENCE:

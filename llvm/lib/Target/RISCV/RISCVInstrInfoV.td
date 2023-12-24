@@ -1682,6 +1682,14 @@ def VFMV_S_F : RVInstV2<0b010000, 0b00000, OPFVF, (outs VR:$vd_wb),
 } // Predicates = [HasVInstructionsAnyF]
 
 let Predicates = [HasVInstructions] in {
+// Vector Rotation Instructions
+let Constraints = "@earlyclobber $vd", RVVConstraint = Rot in {
+defm VROTUP_V : VSLD_IV_X_I<"vrotup", 0b001101>;
+} 
+defm VROTDOWN_V : VSLD_IV_X_I<"vrotdown", 0b010101>;
+}
+
+let Predicates = [HasVInstructions] in {
 // Vector Slide Instructions
 let Constraints = "@earlyclobber $vd", RVVConstraint = SlideUp in {
 defm VSLIDEUP_V : VSLD_IV_X_I<"vslideup", 0b001110>;

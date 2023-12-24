@@ -20611,6 +20611,26 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     IntrinsicTypes = {ResultType, Ops.back()->getType()};
     break;
 
+  // Vector extension, vector rotation up custom instruction intrinsic ID initialization
+  case RISCV::BI__builtin_riscv_vrotup_vx:
+    std::cout << "Entered case for BI__builtin_riscv_vrotup_vx" << std::endl;
+    ID = Intrinsic::riscv_vrotup;
+    PolicyAttrs = 3;
+    Ops.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+    IntrinsicTypes = {ResultType, Ops.back()->getType()};
+    break;
+
+  // Vector extension, vector rotation down custom instruction intrinsic ID initialization
+  case RISCV::BI__builtin_riscv_vrotdown_vx:
+    std::cout << "Entered case for BI__builtin_riscv_vrotdown_vx" << std::endl;
+    ID = Intrinsic::riscv_vrotdown;
+    PolicyAttrs = 3;
+    /*if (PolicyAttrs & RVV_VTA)
+    Ops.insert(Ops.begin(), llvm::PoisonValue::get(ResultType));*/
+    Ops.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+    IntrinsicTypes = {ResultType, Ops.back()->getType()};
+    break;
+
   // Zksed
   case RISCV::BI__builtin_riscv_sm4ks:
     ID = Intrinsic::riscv_sm4ks;

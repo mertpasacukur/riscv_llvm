@@ -104,6 +104,8 @@ def Iota         : RISCVVConstraint<!or(VS2Constraint.Value,
                                         VMConstraint.Value)>;
 def SlideUp      : RISCVVConstraint<!or(VS2Constraint.Value,
                                         VMConstraint.Value)>;
+def Rot          : RISCVVConstraint<!or(VS2Constraint.Value,
+                                        VMConstraint.Value)>;
 def Vrgather     : RISCVVConstraint<!or(VS2Constraint.Value,
                                         VS1Constraint.Value,
                                         VMConstraint.Value)>;

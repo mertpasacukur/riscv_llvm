@@ -92,5 +92,9 @@ TARGET_BUILTIN(__builtin_riscv_ntl_store, "v.", "t", "zihintntl")
 // Vector extension, loadBigEndian32 custom instruction definition
 TARGET_BUILTIN(__builtin_riscv_vlebe32_v,"q2SiUi*Ui", "n","zve32x")
 
+// Vector extension, vector rotation custom instruction definitions
+TARGET_BUILTIN(__builtin_riscv_vrotup_vx, "q2Siq2Siq2SiUiUi", "n", "zve32x")
+TARGET_BUILTIN(__builtin_riscv_vrotdown_vx, "q2Siq2Siq2SiUiUi", "n", "zve32x")
+
 #undef BUILTIN
 #undef TARGET_BUILTIN

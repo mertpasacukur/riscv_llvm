@@ -765,6 +765,26 @@ let TargetPrefix = "riscv" in {
                     [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 4;
   }
+
+  // Input: (vector_in, vector_in, scalar_in, vl, policy)
+  class RVVRotUnMasked
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_anyint_ty,
+                     LLVMMatchType<1>, LLVMMatchType<1>],
+                    [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
+    let VLOperand = 3;
+  }
+
+  // Input: (vector_in, vector_in, vector_in/scalar_in, mask, vl, policy)
+  class RVVRotMasked
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>, llvm_anyint_ty,
+                     LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
+                     LLVMMatchType<1>, LLVMMatchType<1>],
+                    [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
+    let VLOperand = 4;
+  }
+
   // UnMasked Vector Multiply-Add operations, its first operand can not be undef.
   // Input: (vector_in, vector_in/scalar, vector_in, vl, policy)
   class RISCVTernaryAAXAUnMasked
@@ -1297,6 +1317,10 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RVVSlideUnMasked;
     def "int_riscv_" # NAME # "_mask" : RVVSlideMasked;
   }
+  multiclass RVVRot {
+    def "int_riscv_" # NAME : RVVRotUnMasked;
+    def "int_riscv_" # NAME # "_mask" : RVVRotMasked;
+  }
   multiclass RISCVTernaryAAXA {
     def "int_riscv_" # NAME : RISCVTernaryAAXAUnMasked;
     def "int_riscv_" # NAME # "_mask" : RISCVTernaryAAXAMasked;
@@ -1565,6 +1589,9 @@ let TargetPrefix = "riscv" in {
   defm vfclass : RISCVClassify;
 
   defm vfmerge : RISCVBinaryWithV0;
+
+  defm vrotup : RVVRot;
+  defm vrotdown : RVVRot;
 
   defm vslideup : RVVSlide;
   defm vslidedown : RVVSlide;
