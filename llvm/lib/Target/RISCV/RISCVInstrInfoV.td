@@ -998,6 +998,13 @@ multiclass VNCLP_IV_V_X_I<string opcodestr, bits<6> funct6> {
            SchedUnaryMC<"WriteVNClipI", "ReadVNClipV">;
 }
 
+multiclass VROT_IV_X_I<string opcodestr, bits<6> funct6> {
+  def X  : VALUVX<funct6, OPIVX, opcodestr # ".vx">,
+           SchedBinaryMC<"WriteVIRotX", "ReadVIRotV", "ReadVIRotX">;
+  def I  : VALUVI<funct6, opcodestr # ".vi", uimm5>,
+           SchedUnaryMC<"WriteVIRotI", "ReadVIRotV">;
+}
+
 multiclass VSLD_IV_X_I<string opcodestr, bits<6> funct6> {
   def X  : VALUVX<funct6, OPIVX, opcodestr # ".vx">,
            SchedBinaryMC<"WriteVISlideX", "ReadVISlideV", "ReadVISlideX">;
@@ -1682,11 +1689,11 @@ def VFMV_S_F : RVInstV2<0b010000, 0b00000, OPFVF, (outs VR:$vd_wb),
 } // Predicates = [HasVInstructionsAnyF]
 
 let Predicates = [HasVInstructions] in {
-// Vector Rotation Instructions
+// Custom Vector Rotation Instructions
 let Constraints = "@earlyclobber $vd", RVVConstraint = Rot in {
-defm VROTUP_V : VSLD_IV_X_I<"vrotup", 0b001101>;
+defm VROTUP_V : VROT_IV_X_I<"vrotup", 0b010110>;
 } 
-defm VROTDOWN_V : VSLD_IV_X_I<"vrotdown", 0b010101>;
+defm VROTDOWN_V : VROT_IV_X_I<"vrotdown", 0b111001>;
 }
 
 let Predicates = [HasVInstructions] in {

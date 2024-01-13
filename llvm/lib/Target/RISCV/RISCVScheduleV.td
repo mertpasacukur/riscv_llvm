@@ -456,6 +456,9 @@ def WriteVMov1V       : SchedWrite;
 def WriteVMov2V       : SchedWrite;
 def WriteVMov4V       : SchedWrite;
 def WriteVMov8V       : SchedWrite;
+// 16.7. Custom Vector Rotation Instructions
+defm "" : LMULSchedWrites<"WriteVIRotX">;
+defm "" : LMULSchedWrites<"WriteVIRotI">;
 
 //===----------------------------------------------------------------------===//
 /// Define scheduler resources associated with use operands.
@@ -685,6 +688,9 @@ def ReadVMov1V        : SchedRead;
 def ReadVMov2V        : SchedRead;
 def ReadVMov4V        : SchedRead;
 def ReadVMov8V        : SchedRead;
+// 16.7. Custom Vector Rotation Instructions
+defm "" : LMULSchedReads<"ReadVIRotV">;
+defm "" : LMULSchedReads<"ReadVIRotX">;
 
 // Others
 def ReadVMask         : SchedRead;
@@ -878,6 +884,8 @@ def : WriteRes<WriteVFMovVF, []>;
 def : WriteRes<WriteVFMovFV, []>;
 defm "" : LMULWriteRes<"WriteVISlideX", []>;
 defm "" : LMULWriteRes<"WriteVISlideI", []>;
+defm "" : LMULWriteRes<"WriteVIRotX", []>;
+defm "" : LMULWriteRes<"WriteVIRotI", []>;
 defm "" : LMULWriteRes<"WriteVISlide1X", []>;
 defm "" : LMULWriteRes<"WriteVFSlide1F", []>;
 defm "" : LMULSEWWriteRes<"WriteVRGatherVV", []>;
@@ -1041,6 +1049,8 @@ def : ReadAdvance<ReadVFMovFV, 0>;
 def : ReadAdvance<ReadVFMovFX, 0>;
 defm "" : LMULReadAdvance<"ReadVISlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVISlideX", 0>;
+defm "" : LMULReadAdvance<"ReadVIRotV", 0>;
+defm "" : LMULReadAdvance<"ReadVIRotX", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideF", 0>;
 defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_data", 0>;

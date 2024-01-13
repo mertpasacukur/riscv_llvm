@@ -878,6 +878,8 @@ foreach mx = SchedMxList in {
   let Latency = 4, ReleaseAtCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVISlideX",   [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVISlideI",   [SiFive7VA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIRotX",    [SiFive7VA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIRotI",   [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVISlide1X",  [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFSlide1F",  [SiFive7VA], mx, IsWorstCase>;
   }
@@ -1153,6 +1155,8 @@ def : ReadAdvance<ReadVFMovFV, 0>;
 def : ReadAdvance<ReadVFMovFX, 0>;
 defm "" : LMULReadAdvance<"ReadVISlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVISlideX", 0>;
+defm "" : LMULReadAdvance<"ReadVIRotV", 0>;
+defm "" : LMULReadAdvance<"ReadVIRotX", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideF", 0>;
 defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_data", 0>;

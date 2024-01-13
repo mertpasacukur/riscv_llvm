@@ -2970,6 +2970,7 @@ getVSlideup(SelectionDAG &DAG, const RISCVSubtarget &Subtarget, const SDLoc &DL,
     Policy = RISCVII::TAIL_AGNOSTIC | RISCVII::MASK_AGNOSTIC;
   SDValue PolicyOp = DAG.getTargetConstant(Policy, DL, Subtarget.getXLenVT());
   SDValue Ops[] = {Merge, Op, Offset, Mask, VL, PolicyOp};
+  std::cout << "Entered case for getVSlideup()" << std::endl;                                            
   return DAG.getNode(RISCVISD::VSLIDEUP_VL, DL, VT, Ops);
 }
 
@@ -5466,6 +5467,8 @@ void printOnce() {
         std::cout << "VECTOR_SPLICE: " << ISD::VECTOR_SPLICE
                   << " -- VECTOR_SHUFFLE: " << ISD::VECTOR_SHUFFLE
                   << " -- INSERT_VECTOR_ELT: " << ISD::INSERT_VECTOR_ELT
+                  << " -- VSLIDEUP_VL: " << RISCVISD::VSLIDEUP_VL
+                  << " -- VROTUP_VL: " << RISCVISD::VROTUP_VL
                   << " -- INSERT_SUBVECTOR: " << ISD::INSERT_SUBVECTOR << std::endl;
 
         // Set the flag to indicate the message has been printed
@@ -7794,6 +7797,8 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
                   Op.getOpcode() == ISD::INTRINSIC_W_CHAIN;
   unsigned IntNo = Op.getConstantOperandVal(HasChain ? 1 : 0);
 
+  std::cout << "Entered case for lowerVectorIntrinsicScalars, IntNo: " << IntNo << std::endl;
+
   SDLoc DL(Op);
 
   const RISCVVIntrinsicsTable::RISCVVIntrinsicInfo *II =
@@ -8378,6 +8383,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_W_CHAIN(SDValue Op,
     return DAG.getMergeValues({FixedVector, ScalableVector.getValue(1)}, DL);
   }
   }
+
+  std::cout << "Entered case for LowerINTRINSIC_W_CHAIN, Opcode: " << Op.getOpcode() << std::endl;
 
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
 }
@@ -17819,6 +17826,8 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(READ_VLENB)
   NODE_NAME_CASE(TRUNCATE_VECTOR_VL)
   NODE_NAME_CASE(VLE32BE_V)
+  NODE_NAME_CASE(VROTUP_VL)
+  NODE_NAME_CASE(VROTDOWN_VL)
   NODE_NAME_CASE(VSLIDEUP_VL)
   NODE_NAME_CASE(VSLIDE1UP_VL)
   NODE_NAME_CASE(VSLIDEDOWN_VL)

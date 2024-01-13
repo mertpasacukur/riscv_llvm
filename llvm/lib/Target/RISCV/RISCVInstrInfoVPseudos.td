@@ -3379,6 +3379,26 @@ multiclass VPseudoVSLDV_VI<Operand ImmType = simm5, LMULInfo m, string Constrain
   defm _VI : VPseudoVSLDVWithPolicy<m.vrclass, m.vrclass, ImmType, m, Constraint>;
 }
 
+multiclass VPseudoVROTVWithPolicy<VReg RetClass,
+                                  RegisterClass Op1Class,
+                                  DAGOperand Op2Class,
+                                  LMULInfo MInfo,
+                                  string Constraint = ""> {
+  let VLMul = MInfo.value in {
+    def "_" # MInfo.MX : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
+    def "_" # MInfo.MX # "_MASK" : VPseudoBinaryMaskPolicy<RetClass, Op1Class, Op2Class, Constraint>,
+                                   RISCVMaskedPseudo<MaskIdx=3>;
+  }
+}
+
+multiclass VPseudoVROTV_VX<LMULInfo m, string Constraint = ""> {
+  defm _VX : VPseudoVROTVWithPolicy<m.vrclass, m.vrclass, GPR, m, Constraint>;
+}
+
+multiclass VPseudoVROTV_VI<Operand ImmType = simm5, LMULInfo m, string Constraint = ""> {
+  defm _VI : VPseudoVROTVWithPolicy<m.vrclass, m.vrclass, ImmType, m, Constraint>;
+}
+
 multiclass VPseudoVMAC_VV_VX_AAXA<string Constraint = ""> {
   foreach m = MxList in {
     defvar mx = m.MX;
@@ -3431,6 +3451,17 @@ multiclass VPseudoVSLD_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
                            "ReadVISlideX", mx>;
     defm "" : VPseudoVSLDV_VI<ImmType, m, Constraint>,
               SchedBinary<"WriteVISlideI", "ReadVISlideV", "ReadVISlideV", mx>;
+  }
+}
+
+multiclass VPseudoVROT_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
+  foreach m = MxList in {
+    defvar mx = m.MX;
+    defm "" : VPseudoVROTV_VX<m, Constraint>,
+              SchedTernary<"WriteVIRotX", "ReadVIRotV", "ReadVIRotV",
+                           "ReadVIRotX", mx>;
+    defm "" : VPseudoVROTV_VI<ImmType, m, Constraint>,
+              SchedBinary<"WriteVIRotI", "ReadVIRotV", "ReadVIRotV", mx>;
   }
 }
 
@@ -6863,6 +6894,14 @@ defm PseudoVRGATHEREI16 : VPseudoVGTR_VV_EEW<eew=16,
 defm PseudoVCOMPRESS : VPseudoVCPR_V;
 
 //===----------------------------------------------------------------------===//
+// 16.6. Custom Vector Rotation Instructions
+//===----------------------------------------------------------------------===//
+let Predicates = [HasVInstructions] in {
+  defm PseudoVROTUP    : VPseudoVROT_VX_VI<uimm5, "@earlyclobber $rd">;
+  defm PseudoVROTDOWN  : VPseudoVROT_VX_VI<uimm5>;
+} // Predicates = [HasVInstructions]
+
+//===----------------------------------------------------------------------===//
 // Patterns.
 //===----------------------------------------------------------------------===//
 
@@ -7485,6 +7524,12 @@ defm : VPatBinaryV_VV_INT_EEW<"int_riscv_vrgatherei16_vv", "PseudoVRGATHEREI16",
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_V_AnyMask<"int_riscv_vcompress", "PseudoVCOMPRESS", AllIntegerVectors>;
 defm : VPatUnaryV_V_AnyMask<"int_riscv_vcompress", "PseudoVCOMPRESS", AllFloatVectors>;
+
+//===----------------------------------------------------------------------===//
+// 16.6. Custom Vector Rotation Instructions
+//===----------------------------------------------------------------------===//
+defm : VPatTernaryV_VX_VI<"int_riscv_vrotup", "PseudoVROTUP", AllIntegerVectors, uimm5>;
+defm : VPatTernaryV_VX_VI<"int_riscv_vrotdown", "PseudoVROTDOWN", AllIntegerVectors, uimm5>;
 
 // Include the non-intrinsic ISel patterns
 include "RISCVInstrInfoVVLPatterns.td"

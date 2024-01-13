@@ -146,6 +146,13 @@ enum NodeType : unsigned {
   // Vector Extension, New Custom Instruction
   VLE32BE_V,
 
+  // Matches the semantics of vrotup/vrotdown. The first operand is the
+  // pass-thru operand, the second is the source vector, the third is the XLenVT
+  // index (either constant or non-constant), the fourth is the mask, the fifth
+  // is the VL and the sixth is the policy.
+  VROTUP_VL,
+  VROTDOWN_VL,
+
   // Vector Extension
   FIRST_VL_VECTOR_OP,
   // VMV_V_V_VL matches the semantics of vmv.v.v but includes an extra operand

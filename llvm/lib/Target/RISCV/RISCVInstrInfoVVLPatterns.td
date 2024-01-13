@@ -2996,3 +2996,9 @@ defm : VPatSlide1VL_VX<riscv_slide1up_vl, "PseudoVSLIDE1UP">;
 defm : VPatSlide1VL_VF<riscv_fslide1up_vl, "PseudoVFSLIDE1UP">;
 defm : VPatSlide1VL_VX<riscv_slide1down_vl, "PseudoVSLIDE1DOWN">;
 defm : VPatSlide1VL_VF<riscv_fslide1down_vl, "PseudoVFSLIDE1DOWN">;
+
+// Added patterns for custom rotation instructions
+def riscv_rotup_vl   : SDNode<"RISCVISD::VROTUP_VL", SDTRVVSlide, []>;
+def riscv_rotdown_vl : SDNode<"RISCVISD::VROTDOWN_VL", SDTRVVSlide, []>;
+defm : VPatSlideVL_VX_VI<riscv_rotup_vl, "PseudoVROTUP">;
+defm : VPatSlideVL_VX_VI<riscv_rotdown_vl, "PseudoVROTDOWN">;
